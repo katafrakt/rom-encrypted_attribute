@@ -1,0 +1,6 @@
+# For available configuration options, see:
+#   https://github.com/testdouble/standard
+ruby_version: 3.0
+ignore:
+  - "test/test_data.rb":
+    - Naming/ConstantName
