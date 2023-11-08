@@ -4,6 +4,7 @@ require "base64"
 require "json"
 require "openssl"
 require_relative "key_derivator"
+require_relative "payload"
 
 module RomEncryptedAttribute
   class Encryptor
@@ -20,22 +21,7 @@ module RomEncryptedAttribute
       cipher.key = key
       cipher.iv = iv
       encrypted = cipher.update(message) + cipher.final
-      serialize(encrypted, cipher: cipher, iv: iv)
-    end
-
-    private
-
-    def serialize(encrypted, iv:, cipher:)
-      payload =
-        {
-          "p" => Base64.strict_encode64(encrypted),
-          "h" => {
-            "iv" => Base64.strict_encode64(iv),
-            "at" => Base64.strict_encode64(cipher.auth_tag)
-          }
-        }
-
-      JSON.dump(payload)
+      Payload.new(message: encrypted, initialization_vector: iv, auth_tag: cipher.auth_tag).encode
     end
   end
 end
