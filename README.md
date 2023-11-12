@@ -27,7 +27,7 @@ class SecretNotes < ROM::Relation[:sql]
   EncryptedString, EncryptedStringReader =
     RomEncryptedAttribute.define_encrypted_attribute_types(
       primary_key: ENV["ENCRYPTION_PRIMARY_KEY"],
-      derivation_salt: ENV["ENCRYPTION_DERIVATION_SALT"]
+      key_derivation_salt: ENV["ENCRYPTION_KEY_DERIVATION_SALT"]
     )
     
   schema(:secret_notes, infer: true) do

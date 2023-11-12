@@ -10,7 +10,10 @@ class TestActiveRecrodCompatibility < Minitest::Test
     active_record_derived_key = ActiveRecord::Encryption.key_generator.derive_key_from(ActiveRecord::Encryption.config.primary_key)
 
     cipher = OpenSSL::Cipher.new("aes-256-gcm")
-    rom_derived_key = RomEncryptedAttribute::KeyDerivator.new(secret: TestData::PRIMARY_KEY, salt: TestData::DERIVATION_SALT).derive(cipher.key_len)
+    rom_derived_key = RomEncryptedAttribute::KeyDerivator.new(
+      secret: TestData::PRIMARY_KEY,
+      salt: TestData::KEY_DERIVATION_SALT
+    ).derive(cipher.key_len)
     assert_equal active_record_derived_key, rom_derived_key
   end
 

@@ -12,7 +12,7 @@ ActiveRecord::Base.establish_connection(adapter: "sqlite3", database: "test/tmp/
 
 ActiveRecord::Encryption.configure(
   primary_key: TestData::PRIMARY_KEY,
-  key_derivation_salt: TestData::DERIVATION_SALT,
+  key_derivation_salt: TestData::KEY_DERIVATION_SALT,
   hash_digest_class: OpenSSL::Digest::SHA256
 )
 

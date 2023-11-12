@@ -4,7 +4,7 @@ require "rom-repository"
 
 module TestData
   PRIMARY_KEY = "wlz4KVKRRZklg7ErRc8thXNkl1aLJDut"
-  DERIVATION_SALT = "e1l1PGsfsXtGJFpQnKCSF9eYZK4myMTu"
+  KEY_DERIVATION_SALT = "e1l1PGsfsXtGJFpQnKCSF9eYZK4myMTu"
 
   def self.create_rom_container
     ::ROM.container(:sql, "sqlite://test/tmp/test.db") do |config|
@@ -23,7 +23,7 @@ module TestData
       EncryptedString, EncryptedStringReader =
         RomEncryptedAttribute.define_encrypted_attribute_types(
           primary_key: PRIMARY_KEY,
-          derivation_salt: DERIVATION_SALT
+          key_derivation_salt: KEY_DERIVATION_SALT
         )
 
       schema(:secret_notes, infer: true) do
