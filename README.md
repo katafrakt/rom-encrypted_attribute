@@ -36,11 +36,9 @@ class SecretNotes < ROM::Relation[:sql]
 end
 ```
 
-Of course, you can define it somewhere else and just `include` in the relation or use your custom types code organization.
-
 ### Caveats
 
-* Due to a bug in `rom-sql`, reading unencrypted data is turned on by default
+* Due to [a bug](https://github.com/rom-rb/rom-sql/issues/423) in `rom-sql`, reading unencrypted data is always supported, which means that if there's a plain not-encrypted data in your database already, it will be read correctly. This might or might not be desirable, but for the time being there's no choice in cofiguring this behaviour.
 * The gem uses SHA256 for key derivation and it's currently not configurable
 * Support for deterministic encryption from `ActiveRecord::Encryption` is not implemented
 
