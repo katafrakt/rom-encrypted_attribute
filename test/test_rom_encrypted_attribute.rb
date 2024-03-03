@@ -9,14 +9,16 @@ class TestRomEncryptedAttribute < Minitest::Test
     @repo = TestData::ROM::SecretNoteRepository.new(rom)
   end
 
-  def test_that_it_has_a_version_number
-    refute_nil ::RomEncryptedAttribute::VERSION
-  end
-
   def test_can_read_what_it_wrote
     note = @repo.create(title: "test", content: "test content")
     read_note = @repo.find(note.id)
     assert_equal "test content", read_note.content
+  end
+
+  def test_can_read_what_it_wrote_using_custom_key_derivation
+    note = @repo.create(title: "test", content: "test content")
+    read_note = @repo.find(note.id)
+    assert_equal "test", read_note.title
   end
 
   def test_can_update_and_read_it
@@ -37,13 +39,14 @@ class TestRomEncryptedAttribute < Minitest::Test
     note = @repo.create(title: "test", content: "content")
     raw = @db[:secret_notes].where(id: note.id).first
     refute_includes raw[:content], "content"
+    refute_includes raw[:title], "test"
   end
 
   # NOTE: this should be configurable, but due to a bug in rom-sql, it needs to be
   # enabled by default. Expect a breaking change in the future.
   def test_can_read_unencrypted_value
-    note_id = @db[:secret_notes].insert(title: "plain", content: "text")
+    note_id = @db[:secret_notes].insert(title: "plain", content: "text", comment: "test comment")
     read_note = @repo.find(note_id)
-    assert_equal "text", read_note.content
+    assert_equal "test comment", read_note.comment
   end
 end

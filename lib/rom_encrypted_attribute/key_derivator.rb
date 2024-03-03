@@ -4,16 +4,17 @@ require "openssl"
 
 module RomEncryptedAttribute
   class KeyDerivator
-    DIGEST_CLASS = OpenSSL::Digest::SHA256
+    DEFAULT_DIGEST_CLASS = OpenSSL::Digest::SHA1
     ITERATIONS = 2**16
 
-    def initialize(secret:, salt:)
+    def initialize(secret:, salt:, hash_digest_class: DEFAULT_DIGEST_CLASS)
       @secret = secret
       @salt = salt
+      @hash_digest_class = hash_digest_class
     end
 
     def derive(size)
-      OpenSSL::PKCS5.pbkdf2_hmac(@secret, @salt, ITERATIONS, size, DIGEST_CLASS.new)
+      OpenSSL::PKCS5.pbkdf2_hmac(@secret, @salt, ITERATIONS, size, @hash_digest_class.new)
     end
   end
 end

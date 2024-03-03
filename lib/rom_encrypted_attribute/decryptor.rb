@@ -2,13 +2,12 @@
 
 require "base64"
 require "json"
-require_relative "key_derivator"
 require_relative "payload"
 
 module RomEncryptedAttribute
   class Decryptor
-    def initialize(secret:, salt:)
-      @derivator = KeyDerivator.new(secret: secret, salt: salt)
+    def initialize(derivator:)
+      @derivator = derivator
     end
 
     def decrypt(message)

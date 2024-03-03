@@ -36,11 +36,29 @@ class SecretNotes < ROM::Relation[:sql]
 end
 ```
 
+By default the gem uses SHA1 for key derivation (same as Rails' default), but you can configure it by passing custom `has_digest_class` option.
+
+``` ruby
+class SecretNotes < ROM::Relation[:sql]
+  EncryptedString, EncryptedStringReader =
+    RomEncryptedAttribute.define_encrypted_attribute_types(
+      primary_key: ENV["ENCRYPTION_PRIMARY_KEY"],
+      key_derivation_salt: ENV["ENCRYPTION_KEY_DERIVATION_SALT"],
+      hash_digest_class: OpenSSL::Digest::SHA256
+    )
+    
+  schema(:secret_notes, infer: true) do
+    attribute :content, EncryptedString, read: EncryptedStringReader
+  end
+end
+
+```
+
 ### Caveats
 
 * Due to [a bug](https://github.com/rom-rb/rom-sql/issues/423) in `rom-sql`, reading unencrypted data is always supported, which means that if there's a plain not-encrypted data in your database already, it will be read correctly. This might or might not be desirable, but for the time being there's no choice in cofiguring this behaviour.
-* The gem uses SHA256 for key derivation and it's currently not configurable
 * Support for deterministic encryption from `ActiveRecord::Encryption` is not implemented
+* Support for key rotation is not implemented
 
 ## Contributing
 
