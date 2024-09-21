@@ -1,4 +1,4 @@
-# RomEncryptedAttribute
+# ROM::EncryptedAttribute
 
 This gem adds support for encrypted attributes to [ROM](https://rom-rb.org/).
 
@@ -12,11 +12,11 @@ The scheme is compatible with Rails' default settings for ActiveRecord encryptio
 
 Install the gem and add to the application's Gemfile by executing:
 
-    $ bundle add rom_encrypted_attribute
+    $ bundle add rom-encrypted_attribute
 
 If bundler is not being used to manage dependencies, install the gem by executing:
 
-    $ gem install rom_encrypted_attribute
+    $ gem install rom-encrypted_attribute
 
 ## Usage
 
@@ -25,7 +25,7 @@ In your relation, define custom types using a helper method from the gem. You ne
 ```ruby
 class SecretNotes < ROM::Relation[:sql]
   EncryptedString, EncryptedStringReader =
-    RomEncryptedAttribute.define_encrypted_attribute_types(
+    ROM::EncryptedAttribute.define_encrypted_attribute_types(
       primary_key: ENV["ENCRYPTION_PRIMARY_KEY"],
       key_derivation_salt: ENV["ENCRYPTION_KEY_DERIVATION_SALT"]
     )
@@ -41,7 +41,7 @@ By default the gem uses SHA1 for key derivation (same as Rails' default), but yo
 ``` ruby
 class SecretNotes < ROM::Relation[:sql]
   EncryptedString, EncryptedStringReader =
-    RomEncryptedAttribute.define_encrypted_attribute_types(
+    ROM::EncryptedAttribute.define_encrypted_attribute_types(
       primary_key: ENV["ENCRYPTION_PRIMARY_KEY"],
       key_derivation_salt: ENV["ENCRYPTION_KEY_DERIVATION_SALT"],
       hash_digest_class: OpenSSL::Digest::SHA256
@@ -62,4 +62,4 @@ end
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/katafrakt/rom_encrypted_attribute.
+Bug reports and pull requests are welcome on GitHub at https://github.com/katafrakt/rom-encrypted_attribute.

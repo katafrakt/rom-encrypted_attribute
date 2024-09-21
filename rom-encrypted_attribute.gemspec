@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
-require_relative "lib/rom_encrypted_attribute/version"
+require_relative "lib/rom/encrypted_attribute/version"
 
 Gem::Specification.new do |spec|
-  spec.name = "rom_encrypted_attribute"
-  spec.version = RomEncryptedAttribute::VERSION
+  spec.name = "rom-encrypted_attribute"
+  spec.version = ROM::EncryptedAttribute::VERSION
   spec.authors = ["Paweł Świątkowski"]
   spec.email = ["katafrakt@vivaldi.net"]
 
   spec.summary = "Encrypted attributes for ROM"
   spec.required_ruby_version = ">= 3.0.0"
-  spec.metadata["source_code_uri"] = "https://github.com/katafrakt/rom_encrypted_attribute"
+  spec.metadata["source_code_uri"] = "https://github.com/katafrakt/rom-encrypted_attribute"
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.

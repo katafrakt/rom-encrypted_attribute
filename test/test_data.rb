@@ -1,6 +1,7 @@
 require "active_record"
 require "rom-sql"
 require "rom-repository"
+require "rom/encrypted_attribute"
 
 module TestData
   PRIMARY_KEY = "wlz4KVKRRZklg7ErRc8thXNkl1aLJDut"
@@ -32,13 +33,13 @@ module TestData
   module ROM
     class SecretNotes < ::ROM::Relation[:sql]
       EncryptedString, EncryptedStringReader =
-        RomEncryptedAttribute.define_encrypted_attribute_types(
+        ::ROM::EncryptedAttribute.define_encrypted_attribute_types(
           primary_key: PRIMARY_KEY,
           key_derivation_salt: KEY_DERIVATION_SALT
         )
 
       EncryptedStringSha256, EncryptedStringSha256Reader =
-        RomEncryptedAttribute.define_encrypted_attribute_types(
+        ::ROM::EncryptedAttribute.define_encrypted_attribute_types(
           primary_key: PRIMARY_KEY,
           key_derivation_salt: KEY_DERIVATION_SALT,
           hash_digest_class: OpenSSL::Digest::SHA256

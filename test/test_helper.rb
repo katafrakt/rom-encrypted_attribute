@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
-require "rom_encrypted_attribute"
+require "rom/encrypted_attribute"
 
 require "minitest/autorun"
 require_relative "test_data"
