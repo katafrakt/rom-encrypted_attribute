@@ -20,6 +20,59 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 ## Usage
 
+There are two ways to use this library: via a ROM schema plugin or by a "bare metal" approach.
+
+### ROM plugin
+
+Somewhere in you code set the config for the gem. This is done using [`Dry::Configurable`](https://dry-rb.org/gems/dry-configurable/1.0/), so you can use all options available there. For example:
+
+``` ruby
+ROM::EncryptedAttribute.configure do |config|
+  config.primary_key = "your-primary-key" # required
+  config.key_derivation_salt = "your-derivation-salt" # required
+  config.hash_digest_class = OpenSSL::Digest::SHA256 # SHA1 by default
+end
+```
+
+Then use the plugin in your ROM relation:
+
+``` ruby
+class SecretNotes < ::ROM::Relation[:sql]
+  schema(:secret_notes, infer: true) do
+    use :encrypted_attributes
+    encrypt :content
+  end
+end
+```
+
+You can override individual configuration values if, for example, one database table uses different primary key:
+
+``` ruby
+class SecretNotes < ::ROM::Relation[:sql]
+  schema(:secret_notes, infer: true) do
+    use :encrypted_attributes, primary_key: ENV["SPECIAL_PRIMARY_KEY"]
+    encrypt :content
+  end
+end
+```
+
+If you specify all configuration options, or use defaults, you can skip setting the global config.
+
+You can also override global per-schema settings on a per-field level:
+
+``` ruby
+class SecretNotes < ::ROM::Relation[:sql]
+  schema(:secret_notes, infer: true) do
+    use :encrypted_attributes
+    encrypt :content
+    encrypt :title, :hash_digest_class: OpenSSL::Digest::SHA256
+  end
+end
+
+```
+
+### "Bare metal"
+
 In your relation, define custom types using a helper method from the gem. You need to provide the credentials to it somehow. This might be done via environmental variables, Hanami settings (if you're using Hanami) or any other means, really.
 
 ```ruby
@@ -36,7 +89,11 @@ class SecretNotes < ROM::Relation[:sql]
 end
 ```
 
-By default the gem uses SHA1 for key derivation (same as Rails' default), but you can configure it by passing custom `has_digest_class` option.
+With this approach you can define the types globally in your application and reuse it, without having to pass primary_key and key_derivation_salt every time in the schema.
+
+### Other considerations
+
+By default the gem uses SHA1 for key derivation (same as Rails' default), but you can configure it by passing custom `hash_digest_class` option.
 
 ``` ruby
 class SecretNotes < ROM::Relation[:sql]
@@ -56,9 +113,9 @@ end
 
 ### Caveats
 
-* Due to [a bug](https://github.com/rom-rb/rom-sql/issues/423) in `rom-sql`, reading unencrypted data is always supported, which means that if there's a plain not-encrypted data in your database already, it will be read correctly. This might or might not be desirable, but for the time being there's no choice in cofiguring this behaviour.
-* Support for deterministic encryption from `ActiveRecord::Encryption` is not implemented
-* Support for key rotation is not implemented
+* Due to [a bug](https://github.com/rom-rb/rom-sql/issues/423) in `rom-sql`, reading unencrypted data is always supported, which means that if there's a plain not-encrypted data in your database already, it will be read correctly. This might or might not be desirable, but for the time being there's no choice in configuring this behaviour.
+* Support for deterministic encryption from `ActiveRecord::Encryption` is not (yet) implemented
+* Support for key rotation is not (yet) implemented
 
 ## Contributing
 

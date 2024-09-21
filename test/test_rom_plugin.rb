@@ -2,11 +2,30 @@
 
 require "test_helper"
 
-class TestEncryptedAttribute < Minitest::Test
+class TestRomPlugin < Minitest::Test
+  class SecretNotes < ::ROM::Relation[:sql]
+    schema(:secret_notes, infer: true) do
+      use :encrypted_attributes
+      encrypt :content
+      encrypt :title, hash_digest_class: OpenSSL::Digest::SHA256
+    end
+  end
+
+  class SecretNoteRepository < ::ROM::Repository[:secret_notes]
+    commands :create, update: :by_pk
+
+    def find(id)
+      secret_notes.by_pk(id).one!
+    end
+  end
+
   def setup
-    rom = TestData.create_rom_container
+    rom =
+      ::ROM.container(:sql, "sqlite://test/tmp/test.db") do |config|
+        config.register_relation(SecretNotes)
+      end
     @db = rom.gateways[:default]
-    @repo = TestData::ROM::SecretNoteRepository.new(rom)
+    @repo = SecretNoteRepository.new(rom)
   end
 
   def test_can_read_what_it_wrote
@@ -42,8 +61,6 @@ class TestEncryptedAttribute < Minitest::Test
     refute_includes raw[:title], "test"
   end
 
-  # NOTE: this should be configurable, but due to a bug in rom-sql, it needs to be
-  # enabled by default. Expect a breaking change in the future.
   def test_can_read_unencrypted_value
     note_id = @db[:secret_notes].insert(title: "plain", content: "text", comment: "test comment")
     read_note = @repo.find(note_id)

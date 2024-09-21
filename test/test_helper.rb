@@ -21,3 +21,8 @@ class CreateSecretNotes < ActiveRecord::Migration[7.0]
 end
 
 CreateSecretNotes.migrate :up
+
+ROM::EncryptedAttribute.configure do |config|
+  config.primary_key = TestData::PRIMARY_KEY
+  config.key_derivation_salt = TestData::KEY_DERIVATION_SALT
+end
