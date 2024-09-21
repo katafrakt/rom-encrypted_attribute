@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 
-# Specify your gem's dependencies in rom_encrypted_attribute.gemspec
+# Specify your gem's dependencies in rom-encrypted_attribute.gemspec
 gemspec
 
 gem "rake", "~> 13.0"

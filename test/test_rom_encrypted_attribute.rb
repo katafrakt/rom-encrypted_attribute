@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class TestRomEncryptedAttribute < Minitest::Test
+class TestEncryptedAttribute < Minitest::Test
   def setup
     rom = TestData.create_rom_container
     @db = rom.gateways[:default]
