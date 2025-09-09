@@ -9,6 +9,12 @@ class TestEncryptedAttribute < Minitest::Test
     @repo = TestData::ROM::SecretNoteRepository.new(rom)
   end
 
+  def test_support_nulls
+    note = @repo.create(title: "test")
+    read_note = @repo.find(note.id)
+    assert_nil read_note.content
+  end
+
   def test_can_read_what_it_wrote
     note = @repo.create(title: "test", content: "test content")
     read_note = @repo.find(note.id)
