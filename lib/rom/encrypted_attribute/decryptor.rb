@@ -12,6 +12,8 @@ module ROM
       end
 
       def decrypt(message)
+        return nil if message.nil?
+
         payload = ROM::EncryptedAttribute::Payload.decode(message)
 
         cipher = OpenSSL::Cipher.new("aes-256-gcm")

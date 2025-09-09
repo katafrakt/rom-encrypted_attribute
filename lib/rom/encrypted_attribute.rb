@@ -12,6 +12,10 @@ module ROM
   module EncryptedAttribute
     extend Dry::Configurable
 
+    module Types
+      include Dry.Types()
+    end
+
     setting :primary_key
     setting :key_derivation_salt
     setting :hash_digest_class, default: OpenSSL::Digest::SHA1
@@ -20,11 +24,11 @@ module ROM
       key_derivator = KeyDerivator.new(salt: key_derivation_salt, secret: primary_key,
         hash_digest_class: hash_digest_class)
 
-      reader_type = Dry.Types.Constructor(String) do |value|
+      reader_type = Dry.Types.Constructor(Types::String.optional) do |value|
         ROM::EncryptedAttribute::Decryptor.new(derivator: key_derivator).decrypt(value)
       end
 
-      writer_type = Dry.Types.Constructor(String) do |value|
+      writer_type = Dry.Types.Constructor(Types::String.optional) do |value|
         ROM::EncryptedAttribute::Encryptor.new(derivator: key_derivator).encrypt(value)
       end
 

@@ -13,6 +13,8 @@ module ROM
       end
 
       def encrypt(message)
+        return nil if message.nil?
+
         cipher = OpenSSL::Cipher.new("aes-256-gcm")
         key = @derivator.derive(cipher.key_len)
         iv = cipher.random_iv
