@@ -66,6 +66,7 @@ class SecretNotes < ::ROM::Relation[:sql]
     use :encrypted_attributes
     encrypt :content
     encrypt :title, :hash_digest_class: OpenSSL::Digest::SHA256
+    encrypt :maybe_encrypted, support_unencrypted_data: true
   end
 end
 
@@ -113,7 +114,7 @@ end
 
 ### Caveats
 
-* Due to [a bug](https://github.com/rom-rb/rom-sql/issues/423) in `rom-sql`, reading unencrypted data is always supported, which means that if there's a plain not-encrypted data in your database already, it will be read correctly. This might or might not be desirable, but for the time being there's no choice in configuring this behaviour.
+* Due to [a bug](https://github.com/rom-rb/rom-sql/issues/423) in `rom-sql`, reading unencrypted data requires a monkey patch to ROM. Since this is quite aggressive, you are expected to opt-in to this by calling `ROM::SQL::Patch432.install!`.
 * Support for deterministic encryption from `ActiveRecord::Encryption` is not (yet) implemented
 * Support for key rotation is not (yet) implemented
 

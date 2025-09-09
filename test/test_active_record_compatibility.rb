@@ -4,6 +4,11 @@ class TestActiveRecrodCompatibility < Minitest::Test
   def setup
     @rom = TestData.create_rom_container
     @repo = TestData::ROM::SecretNoteRepository.new(@rom)
+    ROM::SQL::Patch432.install!
+  end
+
+  def teardown
+    ROM::SQL::Patch432.uninstall!
   end
 
   def test_derive_the_same_key

@@ -26,6 +26,11 @@ class TestRomPlugin < Minitest::Test
       end
     @db = rom.gateways[:default]
     @repo = SecretNoteRepository.new(rom)
+    ROM::SQL::Patch432.install!
+  end
+
+  def teardown
+    ROM::SQL::Patch432.uninstall!
   end
 
   def test_support_nulls
@@ -67,9 +72,17 @@ class TestRomPlugin < Minitest::Test
     refute_includes raw[:title], "test"
   end
 
-  def test_can_read_unencrypted_value
+  def test_raise_on_unencrypted_value
     note_id = @db[:secret_notes].insert(title: "plain", content: "text", comment: "test comment")
-    read_note = @repo.find(note_id)
-    assert_equal "test comment", read_note.comment
+    assert_raises(ROM::EncryptedAttribute::Decryptor::UnencryptedDataNotAllowed) {
+      @repo.find(note_id)
+    }
+  end
+
+  def test_read_unencrypted_value_when_allowed
+    note = @repo.create(title: "plain", content: "text")
+    @db[:secret_notes].where(id: note.id).update(maybe_encrypted: "plain little text")
+    note = @repo.find(note.id)
+    assert_equal "plain little text", note.maybe_encrypted
   end
 end

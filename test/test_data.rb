@@ -45,9 +45,17 @@ module TestData
           hash_digest_class: OpenSSL::Digest::SHA256
         )
 
+      EncryptedStringWithPlaintextFallback, EncryptedStringWithPlaintextFallbackReader =
+        ::ROM::EncryptedAttribute.define_encrypted_attribute_types(
+          primary_key: PRIMARY_KEY,
+          key_derivation_salt: KEY_DERIVATION_SALT,
+          support_unencrypted_data: true
+        )
+
       schema(:secret_notes, infer: true) do
         attribute :content, EncryptedString, read: EncryptedStringReader
         attribute :title, EncryptedStringSha256, read: EncryptedStringSha256Reader
+        attribute :maybe_encrypted, EncryptedStringWithPlaintextFallback, read: EncryptedStringWithPlaintextFallbackReader
       end
     end
 

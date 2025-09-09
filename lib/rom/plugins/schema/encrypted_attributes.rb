@@ -11,10 +11,11 @@ module ROM
           primary_key = options.fetch(:primary_key, ROM::EncryptedAttribute.config.primary_key)
           key_derivation_salt = options.fetch(:key_derivation_salt, ROM::EncryptedAttribute.config.key_derivation_salt)
           hash_digest_class = options.fetch(:hash_digest_class, ROM::EncryptedAttribute.config.hash_digest_class)
+          support_unencrypted_data = options.fetch(:support_unencrypted_data, EncryptedAttribute.config.support_unencrypted_data)
 
           encrypted_string, encrypted_string_reader =
             ROM::EncryptedAttribute.define_encrypted_attribute_types(
-              primary_key: primary_key, key_derivation_salt: key_derivation_salt, hash_digest_class: hash_digest_class
+              primary_key: primary_key, key_derivation_salt: key_derivation_salt, hash_digest_class: hash_digest_class, support_unencrypted_data: support_unencrypted_data
             )
 
           attrs =

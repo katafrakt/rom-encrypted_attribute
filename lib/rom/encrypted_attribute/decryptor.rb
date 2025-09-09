@@ -7,8 +7,11 @@ require_relative "payload"
 module ROM
   module EncryptedAttribute
     class Decryptor
-      def initialize(derivator:)
+      UnencryptedDataNotAllowed = Class.new(RuntimeError)
+
+      def initialize(derivator:, support_unencrypted_data: false)
         @derivator = derivator
+        @support_unencrypted_data = support_unencrypted_data
       end
 
       def decrypt(message)
@@ -27,9 +30,11 @@ module ROM
         cipher.auth_data = ""
         cipher.update(payload.message) + cipher.final
       rescue JSON::ParserError
-        # we need to unconditionally support of reading unencrypted data due to a bug in rom-sql
-        # https://github.com/rom-rb/rom-sql/issues/423
-        message
+        if @support_unencrypted_data
+          message
+        else
+          raise UnencryptedDataNotAllowed
+        end
       end
     end
   end

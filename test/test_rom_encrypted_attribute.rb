@@ -4,9 +4,14 @@ require "test_helper"
 
 class TestEncryptedAttribute < Minitest::Test
   def setup
+    ROM::SQL::Patch432.install!
     rom = TestData.create_rom_container
     @db = rom.gateways[:default]
     @repo = TestData::ROM::SecretNoteRepository.new(rom)
+  end
+
+  def teardown
+    ROM::SQL::Patch432.uninstall!
   end
 
   def test_support_nulls
@@ -48,11 +53,17 @@ class TestEncryptedAttribute < Minitest::Test
     refute_includes raw[:title], "test"
   end
 
-  # NOTE: this should be configurable, but due to a bug in rom-sql, it needs to be
-  # enabled by default. Expect a breaking change in the future.
-  def test_can_read_unencrypted_value
+  def test_raise_on_reading_unencrypted_value
     note_id = @db[:secret_notes].insert(title: "plain", content: "text", comment: "test comment")
-    read_note = @repo.find(note_id)
-    assert_equal "test comment", read_note.comment
+    assert_raises(ROM::EncryptedAttribute::Decryptor::UnencryptedDataNotAllowed) {
+      @repo.find(note_id)
+    }
+  end
+
+  def test_read_unencrypted_value_when_allowed
+    note = @repo.create(title: "plain", content: "text")
+    @db[:secret_notes].where(id: note.id).update(maybe_encrypted: "plain little text")
+    note = @repo.find(note.id)
+    assert_equal "plain little text", note.maybe_encrypted
   end
 end

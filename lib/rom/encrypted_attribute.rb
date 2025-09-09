@@ -19,13 +19,14 @@ module ROM
     setting :primary_key
     setting :key_derivation_salt
     setting :hash_digest_class, default: OpenSSL::Digest::SHA1
+    setting :support_unencrypted_data, default: false
 
-    def self.define_encrypted_attribute_types(primary_key:, key_derivation_salt:, hash_digest_class: OpenSSL::Digest::SHA1)
+    def self.define_encrypted_attribute_types(primary_key:, key_derivation_salt:, hash_digest_class: OpenSSL::Digest::SHA1, support_unencrypted_data: false)
       key_derivator = KeyDerivator.new(salt: key_derivation_salt, secret: primary_key,
         hash_digest_class: hash_digest_class)
 
       reader_type = Dry.Types.Constructor(Types::String.optional) do |value|
-        ROM::EncryptedAttribute::Decryptor.new(derivator: key_derivator).decrypt(value)
+        ROM::EncryptedAttribute::Decryptor.new(derivator: key_derivator, support_unencrypted_data: support_unencrypted_data).decrypt(value)
       end
 
       writer_type = Dry.Types.Constructor(Types::String.optional) do |value|
